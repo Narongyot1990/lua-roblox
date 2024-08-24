@@ -1,3 +1,24 @@
+--[[
+เริ่มต้นโดยเรียกใช้ ReplicatedStorage , Players รวมถึงการกำหนดตัวแปร player สำหรับผู้เล่น LocalPlayer
+
+มีการอ้างอิงถึงส่วนประกอบต่างๆ ของ GUI (ExpGui, ExpBarFrame, expLabel, levelLabel) ที่ใช้ในการแสดงผล EXP และเลเวลของผู้เล่น
+
+มีการรับค่า RemoteEvent (EXPUpdateEvent) จาก ReplicatedStorage เพื่ออัปเดตข้อมูลของผู้เล่น
+
+ฟังก์ชัน addGradientToProgressBar ใช้ในการเพิ่มเอฟเฟกต์สีไล่เฉด (UIGradient) ให้กับ Progress Bar โดยไล่สีจากฟ้าเป็นเขียว และสุดท้ายเป็นเหลือง
+
+ฟังก์ชัน updateProgressBarGui ใช้ในการอัปเดตขนาดของ Progress Bar ตามค่าเปอร์เซ็นต์ที่คำนวณจาก EXP ของผู้เล่น พร้อมทั้งอัปเดตข้อความที่แสดง EXP และเลเวลของผู้เล่นบน GUI
+
+ฟังก์ชัน updateProgressFromEXP ใช้ในการอัปเดต Progress Bar โดยดึงค่า EXP ปัจจุบัน เลเวลปัจจุบัน EXP ที่ต้องการสำหรับเลเวลถัดไป และ EXP ที่ต้องการสำหรับเลเวลก่อนหน้า จาก Attribute ของผู้เล่น
+
+ฟังก์ชันที่เชื่อมต่อกับ OnClientEvent จะทำการอัปเดตค่า EXP และเลเวลของผู้เล่นใน Attributes จากนั้นจะเรียกฟังก์ชัน updateProgressFromEXP เพื่ออัปเดต Progress Bar
+
+ฟังก์ชัน addGradientToProgressBar ถูกเรียกใช้ทันทีหลังจากการกำหนด ExpBarFrame เพื่อเพิ่มสีไล่เฉดให้กับ Progress Bar
+
+หากมีข้อมูลเริ่มต้นที่ต้องการแสดงเมื่อสคริปต์เริ่มทำงาน (เช่นค่า EXP และ NextLevelEXP ของผู้เล่น) ฟังก์ชัน updateProgressFromEXP จะถูกเรียกใช้เพื่ออัปเดต GUI ทันที
+]]
+
+
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
@@ -43,7 +64,6 @@ local function updateProgressFromEXP()
 	local nextLevelEXP = player:GetAttribute("NextLevelEXP")
 	local previousLevelEXP = player:GetAttribute("PreviousLevelEXP")
 
-	-- ตรวจสอบให้แน่ใจว่า nextLevelEXP และ currentEXP มีค่าเป็น number
 	if currentEXP and nextLevelEXP and previousLevelEXP then
 		--print(currentEXP, currentLevel, nextLevelEXP, previousLevelEXP)
 		local progressPercentage = ((currentEXP - previousLevelEXP) / (nextLevelEXP - previousLevelEXP)) * 100
